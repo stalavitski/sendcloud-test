@@ -20,12 +20,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# @TODO make it env configurable
 SECRET_KEY = 'q%^v09twt@0dy=*24ll-cdm^w+xdnprz^&)4wq8)9h2k!ht4om'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True  # @TODO make it env configurable
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0']  # @TODO make it env configurable
 
 
 # Application definition
@@ -75,8 +76,12 @@ WSGI_APPLICATION = 'rss.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',
+        'PORT': 5432,
     }
 }
 
