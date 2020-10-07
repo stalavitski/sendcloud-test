@@ -5,8 +5,7 @@ from users.serializers import UserSerializer
 
 class UserSerializerTestCase(TestCase):
     # create tests
-    def test__create__encrypts_password__on_registration(self):
-        # Arrange
+    def test__create__encrypt_password__on_registration(self):
         serializer = UserSerializer()
         password = 'test_password'
         data = {
@@ -14,8 +13,8 @@ class UserSerializerTestCase(TestCase):
             'password': password,
             'username': 'test_username'
         }
-        # Act
+
         user = serializer.create(data)
-        # Assert
+
         self.assertIsNotNone(user.password)
         self.assertNotEqual(user.password, password)

@@ -21,7 +21,6 @@ class FeedSubscriptionPermission(permissions.BasePermission):
         :param view: 'FeedSubscriptionViewSet',
         :return: Is user authenticated.
         """
-        print(request, view)
         return request.user.is_authenticated
 
     def has_object_permission(

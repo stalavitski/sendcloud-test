@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from feeds.models import FeedSubscription
+from feeds.utils.feedupdater import FeedUpdater
 
 
 class FeedSubscriptionSerializer(serializers.ModelSerializer):
@@ -18,3 +19,9 @@ class FeedSubscriptionSerializer(serializers.ModelSerializer):
                 fields=['owner', 'url']
             )
         ]
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        feed_updater = FeedUpdater(instance)
+        feed_updater.update_feed()
+        return instance
