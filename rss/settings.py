@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     # Local apps
+    'feeds.apps.FeedsConfig',
     'users.apps.UsersConfig',
 ]
 
