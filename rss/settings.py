@@ -32,12 +32,18 @@ ALLOWED_HOSTS = ['0.0.0.0']  # @TODO make it env configurable
 # Application definition
 
 INSTALLED_APPS = [
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 3rd-party apps
+    'rest_framework',
+    'rest_framework.authtoken',
+    # Local apps
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +129,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# djangorestframework
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'
+    ],
+    # Only authenticated users are allowed by default
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ]
+}
