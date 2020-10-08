@@ -1,6 +1,6 @@
 from rest_framework import routers
 
-from feeds.views import FeedSubscriptionViewSet
+from feeds.views import FeedSubscriptionViewSet, FeedViewSet
 
 router = routers.SimpleRouter()
 router.register(
@@ -8,4 +8,5 @@ router.register(
     FeedSubscriptionViewSet,
     basename='FeedSubscription'
 )
+router.register('', FeedViewSet, basename='Feed')
 urlpatterns = router.urls

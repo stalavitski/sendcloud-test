@@ -59,6 +59,7 @@ class Feed(models.Model):
     language = models.TextField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     managing_editor = models.TextField(blank=True, null=True)
+    # @TODO default to None
     pub_date = models.DateTimeField(blank=True, default=date.today, null=True)
     subscription = models.OneToOneField(
         FeedSubscription,

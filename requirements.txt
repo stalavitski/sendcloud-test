@@ -2,6 +2,7 @@ asgiref==3.2.10
 Django==3.1.2
 django-filter==2.4.0
 djangorestframework==3.12.1
+djangorestframework-camel-case==1.2.0
 feedparser==6.0.1
 flake8==3.8.4
 importlib-metadata==2.0.0

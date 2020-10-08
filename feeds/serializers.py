@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from feeds.models import FeedSubscription
+from feeds.models import Feed, FeedSubscription
 from feeds.utils.feedupdater import FeedUpdater
 
 
@@ -25,3 +25,9 @@ class FeedSubscriptionSerializer(serializers.ModelSerializer):
         feed_updater = FeedUpdater(instance)
         feed_updater.update_feed()
         return instance
+
+
+class FeedSerializer(serializers.ModelSerializer):
+    class Meta:
+        exclude = []
+        model = Feed
