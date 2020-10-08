@@ -1,5 +1,3 @@
-from datetime import date
-
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -9,7 +7,26 @@ User = get_user_model()
 
 
 class FeedSubscription(models.Model):
+    STATUS_NEW = 'new'
+    STATUS_IN_PROGRESS = 'in_progress'
+    STATUS_FAILURE = 'failure'
+    STATUS_SUCCESS = 'success'
+
+    STATUS_CHOICES = (
+        (STATUS_NEW, _('New')),
+        (STATUS_IN_PROGRESS, _('In progress')),
+        (STATUS_FAILURE, _('Failure')),
+        (STATUS_SUCCESS, _('Success')),
+    )
+
+    is_stopped = models.BooleanField(default=False)
     owner = models.ForeignKey(User, models.CASCADE, 'feed_subscriptions')
+    retries = models.PositiveSmallIntegerField(default=0)
+    status = models.CharField(
+        default=STATUS_NEW,
+        choices=STATUS_CHOICES,
+        max_length=11
+    )
     url = models.URLField()
 
     class Meta:
@@ -46,6 +63,7 @@ class Feed(models.Model):
     cloud_protocol = models.TextField(blank=True, null=True)
     cloud_register_procedure = models.TextField(blank=True, null=True)
     copyright = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
     docs = models.TextField(blank=True, null=True)
     encoding = models.TextField(blank=True, null=True)
@@ -59,8 +77,7 @@ class Feed(models.Model):
     language = models.TextField(blank=True, null=True)
     link = models.TextField(blank=True, null=True)
     managing_editor = models.TextField(blank=True, null=True)
-    # @TODO default to None
-    pub_date = models.DateTimeField(blank=True, default=date.today, null=True)
+    pub_date = models.DateTimeField(blank=True, null=True)
     subscription = models.OneToOneField(
         FeedSubscription,
         models.CASCADE,
@@ -72,6 +89,7 @@ class Feed(models.Model):
     text_input_title = models.TextField(blank=True, null=True)
     title = models.TextField()
     ttl = models.TextField(blank=True, null=True)
+    updated = models.DateTimeField(auto_now=True)
     version = models.TextField(blank=True, null=True)
     web_master = models.TextField(blank=True, null=True)
 
@@ -92,15 +110,18 @@ class FeedCategory(FeedCategoryAbstract):
 class FeedItem(models.Model):
     author = models.TextField(blank=True, null=True)
     comments = models.TextField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
     enclosure_length = models.TextField(blank=True, null=True)
     enclosure_type = models.TextField(blank=True, null=True)
     enclosure_url = models.TextField(blank=True, null=True)
     feed = models.ForeignKey(Feed, models.CASCADE, 'items')
     guid = models.TextField(blank=True, null=True)
+    is_read = models.BooleanField(default=False)
     link = models.TextField(blank=True, null=True)
-    pub_date = models.DateTimeField(blank=True, default=date.today, null=True)
+    pub_date = models.DateTimeField(blank=True, null=True)
     title = models.TextField()
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [

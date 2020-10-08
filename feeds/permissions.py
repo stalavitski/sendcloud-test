@@ -4,8 +4,12 @@ from rest_framework import permissions
 from rest_framework.request import Request
 
 if TYPE_CHECKING:
-    from feeds.models import Feed, FeedSubscription
-    from feeds.views import FeedSubscriptionViewSet, FeedViewSet
+    from feeds.models import Feed, FeedItem, FeedSubscription
+    from feeds.views import (
+        FeedItemViewSet,
+        FeedSubscriptionViewSet,
+        FeedViewSet
+    )
 
 
 class FeedSubscriptionPermission(permissions.IsAuthenticated):
@@ -41,4 +45,25 @@ class FeedPermission(permissions.IsAuthenticated):
         :param obj: Feed object to check.
         :return: Is user an owner.
         """
-        return request.user and obj.subscription.owner_id == request.user.id
+        return request.user and obj.subscription.owner == request.user
+
+
+class FeedItemPermission(permissions.IsAuthenticated):
+    def has_object_permission(
+            self,
+            request: Request,
+            view: 'FeedItemViewSet',
+            obj: 'FeedItem'
+    ) -> bool:
+        """
+        Check if current user is an owner to a FeedItem.
+
+        :param request: Request as a context to get current user.
+        :param view: FeedItemViewSet.
+        :param obj: FeedItem object to check.
+        :return: Is user an owner.
+        """
+        return (
+                request.user
+                and obj.feed.subscription.owner == request.user
+        )

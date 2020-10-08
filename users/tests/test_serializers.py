@@ -1,11 +1,10 @@
-from django.test import TestCase
-
+from rss.tests import BaseTestCase
 from users.serializers import UserSerializer
 
 
-class UserSerializerTestCase(TestCase):
+class UserSerializerTestCase(BaseTestCase):
     # create tests
-    def test__create__encrypt_password__on_registration(self):
+    def test__create__encrypt_password__on_registration(self) -> None:
         serializer = UserSerializer()
         password = 'test_password'
         data = {
