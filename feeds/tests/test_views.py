@@ -1,8 +1,9 @@
-from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.test import APIRequestFactory, force_authenticate
+
 from feeds.views import FeedItemViewSet
 from rss.tests import BaseTestCase
-from rest_framework.response import Response
 
 
 class FeedItemViewSetTestCase(BaseTestCase):
@@ -48,5 +49,3 @@ class FeedItemViewSetTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(old_value, self.feed_item.is_read)
-
-

@@ -1,15 +1,15 @@
 from typing import Dict, Tuple
 
 from django.db.models import QuerySet
+from django.http import Http404
 from django_filters import rest_framework as filters
-from rest_framework.filters import OrderingFilter
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
-from django.http import Http404
 
 from feeds.models import Feed, FeedItem, FeedSubscription
 from feeds.permissions import (
