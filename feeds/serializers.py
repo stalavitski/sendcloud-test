@@ -12,12 +12,13 @@ from feeds.utils.feedupdater import FeedUpdater
 
 
 class FeedSubscriptionSerializer(serializers.ModelSerializer):
+    feed = serializers.IntegerField(read_only=True, source='feed.id')
     owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
 
     class Meta:
-        fields = ['id', 'owner', 'url']
+        fields = ['feed', 'id', 'owner', 'url']
         model = FeedSubscription
         validators = [
             UniqueTogetherValidator(

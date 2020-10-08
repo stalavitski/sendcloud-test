@@ -2,6 +2,7 @@ from typing import Dict, Tuple
 
 from django.db.models import QuerySet
 from django_filters import rest_framework as filters
+from rest_framework.filters import OrderingFilter
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
@@ -57,9 +58,10 @@ class FeedViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
 
 
 class FeedItemViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
-    filter_backends = [filters.DjangoFilterBackend]
+    filter_backends = [filters.DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['feed', 'is_read']
     http_method_names = ['get', 'head', 'patch']
+    ordering_fields = ['updated']
     permission_classes = [FeedItemPermission]
     serializer_class = FeedItemSerializer
 
@@ -74,7 +76,6 @@ class FeedItemViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
             .objects
             .prefetch_related('categories')
             .filter(feed__subscription__owner=self.request.user)
-            .order_by('-updated')
         )
 
     @action(detail=True, methods=['patch'], url_path='set-is-read')
