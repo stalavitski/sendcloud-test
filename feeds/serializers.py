@@ -18,7 +18,7 @@ class FeedSubscriptionSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ['feed', 'id', 'owner', 'url']
+        fields = ['feed', 'id', 'is_stopped', 'owner', 'url']
         model = FeedSubscription
         validators = [
             UniqueTogetherValidator(

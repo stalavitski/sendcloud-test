@@ -1,15 +1,17 @@
+from datetime import datetime
+from time import struct_time
+
 import vcr
 from feedparser.util import FeedParserDict
 
 from feeds.models import FeedCategory, FeedItemCategory, FeedSubscription
 from feeds.utils.feedupdater import (
+    BaseFeedUpdater,
     FeedItemUpdater,
     FeedUpdater,
     FeedUpdaterDoesntExistError,
-    FeedUpdaterInvalidRSSError, BaseFeedUpdater,
+    FeedUpdaterInvalidRSSError
 )
-from datetime import datetime
-from time import struct_time
 from rss.tests import BaseTestCase
 
 

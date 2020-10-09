@@ -3,13 +3,12 @@ from typing import Dict, Tuple
 from django.db.models import QuerySet
 from django.http import Http404
 from django_filters import rest_framework as filters
-from rest_framework import status
+from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet, ModelViewSet
+from rest_framework.viewsets import GenericViewSet
 
 from feeds.models import Feed, FeedItem, FeedSubscription
 from feeds.permissions import (
@@ -22,10 +21,17 @@ from feeds.serializers import (
     FeedSerializer,
     FeedSubscriptionSerializer
 )
+from feeds.tasks import update_feed
 
 
-class FeedSubscriptionViewSet(ModelViewSet):
-    http_method_names = ['get', 'head', 'delete', 'post']
+class FeedSubscriptionViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
+    http_method_names = ['get', 'head', 'delete', 'patch', 'post']
     permission_classes = [FeedSubscriptionPermission]
     serializer_class = FeedSubscriptionSerializer
 
@@ -37,8 +43,39 @@ class FeedSubscriptionViewSet(ModelViewSet):
         """
         return FeedSubscription.objects.filter(owner=self.request.user)
 
+    @action(detail=True, methods=['patch'], url_path='retry')
+    def retry(
+            self,
+            request: Request,
+            *args: Tuple,
+            **kwargs: Dict
+    ) -> Response:
+        """
+        Update FeedSubscription to start update attempts after it has been
+        stopped.
 
-class FeedViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+        :param request: Request with contextual information.
+        :param args: Arguments.
+        :param kwargs: Keyword arguments.
+        :return: Response with 204 (No Content) status.
+        """
+        feed_subscription = self.get_object()
+
+        if not feed_subscription.is_stopped:
+            raise Http404
+
+        # Reset is_stopped and retries values.
+        feed_subscription.success()
+        # Force update
+        update_feed.delay(feed_subscription.id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FeedViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     http_method_names = ['get', 'head']
     permission_classes = [FeedPermission]
     serializer_class = FeedSerializer
@@ -57,11 +94,15 @@ class FeedViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         )
 
 
-class FeedItemViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+class FeedItemViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    GenericViewSet
+):
     filter_backends = [filters.DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['feed', 'is_read']
     http_method_names = ['get', 'head', 'patch']
-    ordering_fields = ['updated']
+    ordering_fields = ['created', 'updated']
     permission_classes = [FeedItemPermission]
     serializer_class = FeedItemSerializer
 
@@ -78,8 +119,8 @@ class FeedItemViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
             .filter(feed__subscription__owner=self.request.user)
         )
 
-    @action(detail=True, methods=['patch'], url_path='set-is-read')
-    def set_is_read(
+    @action(detail=True, methods=['patch'], url_path='is-read')
+    def is_read(
             self,
             request: Request,
             *args: Tuple,
