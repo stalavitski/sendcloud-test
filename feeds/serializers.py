@@ -8,7 +8,7 @@ from feeds.models import (
     FeedItemCategory,
     FeedSubscription
 )
-from feeds.utils.feedupdater import FeedUpdater
+from feeds.tasks import update_feed
 
 
 class FeedSubscriptionSerializer(serializers.ModelSerializer):
@@ -27,10 +27,15 @@ class FeedSubscriptionSerializer(serializers.ModelSerializer):
             )
         ]
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> FeedSubscription:
+        """
+        Create FeedSubscription and schedule async feed update.
+
+        :param validated_data: Dict of serializer validated data.
+        :return: Created instance of FeedSubscription.
+        """
         instance = super().create(validated_data)
-        feed_updater = FeedUpdater(instance)
-        feed_updater.update_feed()
+        update_feed.delay(instance.id)
         return instance
 
 

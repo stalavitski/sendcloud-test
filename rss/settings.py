@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -151,3 +153,25 @@ REST_FRAMEWORK = {
     ],
     'PAGE_SIZE': 10,
 }
+
+
+# celery
+
+CELERY_BROKER_URL = 'redis://redis:6379'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULE = {
+    'update_feeds': {
+        'task': 'feeds.tasks.update_feeds',
+        # 'schedule': crontab('*/10')  # execute every 10 minutes
+        'schedule': crontab()  # execute every 10 minutes
+    },
+}
+
+
+# feeds
+
+MAX_RETRIES = 5

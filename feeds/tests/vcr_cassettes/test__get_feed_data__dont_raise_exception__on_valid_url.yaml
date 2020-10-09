@@ -1,0 +1,170 @@
+interactions:
+- request:
+    body: null
+    headers:
+      A-Im:
+      - feed
+      Accept:
+      - application/atom+xml,application/rdf+xml,application/rss+xml,application/x-netcdf,application/xml;q=0.9,text/xml;q=0.2,*/*;q=0.1
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - close
+      Host:
+      - www.nu.nl
+      User-Agent:
+      - feedparser/6.0.1 +https://github.com/kurtmckee/feedparser/
+    method: GET
+    uri: http://www.nu.nl/rss/Algemeen
+  response:
+    body:
+      string: "<html>\r\n<head><title>301 Moved Permanently</title></head>\r\n<body
+        bgcolor=\"white\">\r\n<center><h1>301 Moved Permanently</h1></center>\r\n<hr><center>CloudFront</center>\r\n</body>\r\n</html>\r\n"
+    headers:
+      Connection:
+      - close
+      Content-Length:
+      - '183'
+      Content-Type:
+      - text/html
+      Date:
+      - Fri, 09 Oct 2020 03:49:46 GMT
+      Location:
+      - https://www.nu.nl/rss/Algemeen
+      Server:
+      - CloudFront
+      Via:
+      - 1.1 4cea94b0894987ae880983d50307d214.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - kavSBZEqhMJTVI7IY9Dihg1zEVks_DXYzOhgDif2I6fKDm0DAiMcEA==
+      X-Amz-Cf-Pop:
+      - WAW50-C1
+      X-Cache:
+      - Redirect from cloudfront
+    status:
+      code: 301
+      message: Moved Permanently
+- request:
+    body: null
+    headers:
+      A-Im:
+      - feed
+      Accept:
+      - application/atom+xml,application/rdf+xml,application/rss+xml,application/x-netcdf,application/xml;q=0.9,text/xml;q=0.2,*/*;q=0.1
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - close
+      Host:
+      - www.nu.nl
+      User-Agent:
+      - feedparser/6.0.1 +https://github.com/kurtmckee/feedparser/
+    method: GET
+    uri: https://www.nu.nl/rss/Algemeen
+  response:
+    body:
+      string: !!binary |
+        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
+        Df37jfP/AXipE5EoNAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=60
+      Connection:
+      - close
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '4005'
+      Content-Type:
+      - application/rss+xml; charset=utf-8
+      Date:
+      - Fri, 09 Oct 2020 03:49:47 GMT
+      Expires:
+      - Fri, 09 Oct 2020 03:49:27 GMT
+      Last-Modified:
+      - Fri, 09 Oct 2020 03:32:35 GMT
+      Vary:
+      - Accept-Encoding
+      Via:
+      - 1.1 dfc3a7bfbc818f103aa0634d79f28907.cloudfront.net (CloudFront)
+      X-Amz-Cf-Id:
+      - 0WetNiSyc1szRoggsGTcwNSHJn2PLY14rWZsSXIStPaO6skK70Xz0A==
+      X-Amz-Cf-Pop:
+      - WAW50-C1
+      X-Cache:
+      - Hit from cloudfront
+    status:
+      code: 200
+      message: OK
+version: 1

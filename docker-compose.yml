@@ -7,6 +7,8 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+  redis:
+    image: "redis:alpine"
   web:
     build: .
     command: bash -c "python /code/manage.py migrate --noinput
@@ -17,3 +19,20 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
+  celery:
+    build: .
+    command: celery -A rss worker -l INFO
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis
+  celery-beat:
+    build: .
+    command: celery -A rss beat -l INFO
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+      - redis

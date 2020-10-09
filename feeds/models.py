@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import F
 from django.utils.translation import gettext as _
 
 User = get_user_model()
@@ -9,14 +11,12 @@ User = get_user_model()
 class FeedSubscription(models.Model):
     STATUS_NEW = 'new'
     STATUS_IN_PROGRESS = 'in_progress'
-    STATUS_FAILURE = 'failure'
-    STATUS_SUCCESS = 'success'
+    STATUS_READY = 'ready'
 
     STATUS_CHOICES = (
         (STATUS_NEW, _('New')),
         (STATUS_IN_PROGRESS, _('In progress')),
-        (STATUS_FAILURE, _('Failure')),
-        (STATUS_SUCCESS, _('Success')),
+        (STATUS_READY, _('Ready')),
     )
 
     is_stopped = models.BooleanField(default=False)
@@ -54,6 +54,36 @@ class FeedSubscription(models.Model):
                 _('Subscription to this feed is already exists.'),
                 code='duplicated_subscription'
             )
+
+    def failure(self) -> None:
+        """
+        Set status to READY, increment retries and set is_stopped to True
+        if retries are exceeded max value.
+        """
+        # It's possible that because of concurrency real value will be
+        # different. It's a trade-off to not make an extra db query.
+        if self.retries + 1 >= settings.MAX_RETRIES:
+            self.is_stopped = True
+
+        self.status = FeedSubscription.STATUS_READY
+        self.retries = F('retries') + 1
+        self.save()
+
+    def in_progress(self) -> None:
+        """
+        Set status to IN_PROGRESS.
+        """
+        self.status = self.STATUS_IN_PROGRESS
+        self.save()
+
+    def success(self) -> None:
+        """
+        Set status to READY, reset retries and is_stopped.
+        """
+        self.is_stopped = False
+        self.retries = 0
+        self.status = FeedSubscription.STATUS_READY
+        self.save()
 
 
 class Feed(models.Model):
