@@ -64,7 +64,7 @@ class FeedItemUpdaterTestCase(BaseTestCase):
         self.assertEqual(feed.id, self.feed.id)
 
     # _update_feed_item tests
-    def test__update_feed_item__create_feed_item__if_not_exists(self) -> None:
+    def test__update_feed_item__create__if_not_exists(self) -> None:
         title = 'test2'
         data = {
             'title': title
@@ -75,17 +75,29 @@ class FeedItemUpdaterTestCase(BaseTestCase):
         self.assertNotEqual(feed_item.id, self.feed_item.id)
         self.assertEqual(feed_item.title, title)
 
-    def test__update_feed_item__update_feed_item__if_exists(self) -> None:
-        guid = 'test'
+    def test__update_feed_item__update__if_guid_exists(self) -> None:
+        title = 'test2'
         data = {
-            'id': guid,
+            'id': self.feed_item.guid,
+            'title': 'test2'
+        }
+
+        FeedItemUpdater._update_feed_item(self.feed, data)
+        self.feed_item.refresh_from_db()
+
+        self.assertEqual(self.feed_item.title, title)
+
+    def test__update_feed_item__update__if_title_exists(self) -> None:
+        link = 'link'
+        data = {
+            'link': link,
             'title': self.feed_item.title
         }
 
         FeedItemUpdater._update_feed_item(self.feed, data)
         self.feed_item.refresh_from_db()
 
-        self.assertEqual(self.feed_item.guid, guid)
+        self.assertEqual(self.feed_item.link, link)
 
     # _update_categories tests
     def test__update_categories__replace_old_categories_with_new(self) -> None:

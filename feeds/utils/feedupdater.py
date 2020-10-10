@@ -77,6 +77,8 @@ class FeedItemUpdater(BaseFeedUpdater):
         :return: Updated FeedItem instance.
         """
         enclosure = next(iter(feed_item_data.get('enclosures', [])), {})
+        guid = feed_item_data.get('id')
+        title = feed_item_data.get('title')
         # Create a filed_name:value dict out of fetched data for FeedItem
         data = {
             'author': feed_item_data.get('author'),
@@ -86,16 +88,25 @@ class FeedItemUpdater(BaseFeedUpdater):
             'enclosure_type': enclosure.get('type'),
             'enclosure_url': enclosure.get('href'),
             'feed': feed,
-            'guid': feed_item_data.get('id'),
+            'guid': guid,
             'link': feed_item_data.get('link'),
             'pub_date': cls.get_pub_date(feed_item_data),
-            'title': feed_item_data.get('title')
+            'title': title
         }
-        # @TODO introduce a better way to determine feed item (guid?)
+        fields = {
+            'feed': feed
+        }
+
+        # To determine the uniqueness of a FeedItem by guid, if it exists,
+        # or title, if not
+        if guid:
+            fields['guid'] = guid
+        else:
+            fields['title'] = title
+
         feed_item, created = FeedItem.objects.get_or_create(
             defaults=data,
-            feed=feed,
-            title=data['title']
+            **fields
         )
 
         if not created:

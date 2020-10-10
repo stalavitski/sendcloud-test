@@ -72,5 +72,6 @@ class BaseTestCase(TestCase):
         """
         self.feed_item, _ = FeedItem.objects.get_or_create(
             feed=self.feed,
+            guid='test',
             title='test'
         )

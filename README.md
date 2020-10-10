@@ -20,6 +20,13 @@ See **Specification** section for details.
 API Specification is available at `/swagger/`.
 
 
+### Testing
+
+To run tests use following command:
+
+`docker-compose exec web python manage.py test`
+
+
 ### Build steps
 
 - Install and run `db` service with `postgres` image to serve a PostgreSQL database;
