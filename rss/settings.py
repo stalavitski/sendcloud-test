@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd-party apps
+    'drf_yasg',
     'rest_framework',
     'rest_framework.authtoken',
     # Local apps
@@ -166,8 +167,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULE = {
     'update_feeds': {
         'task': 'feeds.tasks.update_feeds',
-        # 'schedule': crontab('*/10')  # execute every 10 minutes
-        'schedule': crontab()  # execute every 10 minutes
+        'schedule': crontab('*/10'),  # execute every 10 minutes
     },
 }
 
@@ -175,3 +175,44 @@ CELERY_BEAT_SCHEDULE = {
 # feeds
 
 MAX_RETRIES = 5
+
+
+# drf-yasg (API Specification)
+
+OPENAPI_TITLE = 'RSS API'
+OPENAPI_CONTACT = 'a.stalavitski@gmail.com'
+OPENAPI_DESCRIPTION = (
+    '**Authentication**'
+    '<br/>'
+    'all endpoints except _/users/auth/_ and _/users/register/_ requires '
+    'authentication token in order to access. To obtain token use '
+    '_/users/auth/_ endpoint. Pass token as Authorization header with Token '
+    'prefix.'
+    '<br/>'
+    'Example:'
+    '<br/><br/>'
+    '`Authorization: Token 226d005e6a98cfe5fbe65a8051b323211aaa6c77`'
+    '<br/><br/>'
+    '**Resources**'
+    '<br/><br/>'
+    '`/users/` - Registration and auth.'
+    '<br/><br/>'
+    '`/feeds/subscriptions/` - RSS feed subscriptions.'
+    '<br/><br/>'
+    '`/feeds/` - RSS feed.'
+    '<br/><br/>'
+    '`/feeds/items/` - RSS feed items.'
+)
+OPENAPI_LICENSE = 'BSD License'
+OPENAPI_VERSION = 'v1'
+OPENAPI_TERMS = 'https://www.google.com/policies/terms/'
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}

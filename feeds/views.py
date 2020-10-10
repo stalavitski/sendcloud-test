@@ -2,14 +2,19 @@ from typing import Dict, Tuple
 
 from django.db.models import QuerySet
 from django.http import Http404
+from django.utils.decorators import method_decorator
 from django_filters import rest_framework as filters
+from drf_yasg import openapi
+from drf_yasg.utils import no_body, swagger_auto_schema
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
+from rest_framework.generics import UpdateAPIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from feeds.mixins import FeedSubscriptionViewMixin
 from feeds.models import Feed, FeedItem, FeedSubscription
 from feeds.permissions import (
     FeedItemPermission,
@@ -19,6 +24,7 @@ from feeds.permissions import (
 from feeds.serializers import (
     FeedItemSerializer,
     FeedSerializer,
+    FeedSubscriptionRetrySerializer,
     FeedSubscriptionSerializer
 )
 from feeds.tasks import update_feed
@@ -29,22 +35,25 @@ class FeedSubscriptionViewSet(
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
+    FeedSubscriptionViewMixin,
     GenericViewSet
 ):
-    http_method_names = ['get', 'head', 'delete', 'patch', 'post']
+    http_method_names = ['get', 'head', 'delete', 'post']
     permission_classes = [FeedSubscriptionPermission]
     serializer_class = FeedSubscriptionSerializer
 
-    def get_queryset(self) -> QuerySet:
-        """
-        Get FeedSubscription QuerySet owned by current user.
 
-        :return: FeedSubscription QuerySet owned by current user.
-        """
-        return FeedSubscription.objects.filter(owner=self.request.user)
+class FeedSubscriptionRetryView(FeedSubscriptionViewMixin, UpdateAPIView):
+    http_method_names = ['patch']
+    model = FeedSubscription
+    permission_classes = [FeedSubscriptionPermission]
+    serializer_class = FeedSubscriptionRetrySerializer
 
-    @action(detail=True, methods=['patch'], url_path='retry')
-    def retry(
+    @swagger_auto_schema(
+        operation_description='Force stopped feed update.',
+        request_body=no_body
+    )
+    def patch(
             self,
             request: Request,
             *args: Tuple,
@@ -86,6 +95,10 @@ class FeedViewSet(
 
         :return: Feed QuerySet owned by current user.
         """
+        if getattr(self, 'swagger_fake_view', False):
+            # Queryset just for schema generation metadata
+            return Feed.objects.none()
+
         return (
             Feed
             .objects
@@ -94,6 +107,20 @@ class FeedViewSet(
         )
 
 
+@method_decorator(
+    name='list',
+    decorator=swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'ordering',
+                openapi.IN_QUERY,
+                description='(optional) Order feeds by created, pub_date '
+                            'or updated.',
+                type=openapi.TYPE_STRING
+            )
+        ]
+    )
+)
 class FeedItemViewSet(
     mixins.RetrieveModelMixin,
     mixins.ListModelMixin,
@@ -102,7 +129,7 @@ class FeedItemViewSet(
     filter_backends = [filters.DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['feed', 'is_read']
     http_method_names = ['get', 'head', 'patch']
-    ordering_fields = ['created', 'updated']
+    ordering_fields = ['created', 'pub_date', 'updated']
     permission_classes = [FeedItemPermission]
     serializer_class = FeedItemSerializer
 
@@ -112,6 +139,10 @@ class FeedItemViewSet(
 
         :return: Feed QuerySet owned by current user.
         """
+        if getattr(self, 'swagger_fake_view', False):
+            # Queryset just for schema generation metadata
+            return FeedItem.objects.none()
+
         return (
             FeedItem
             .objects
@@ -119,6 +150,11 @@ class FeedItemViewSet(
             .filter(feed__subscription__owner=self.request.user)
         )
 
+    @swagger_auto_schema(
+        'patch',
+        operation_description='Mark unread feed item as read.',
+        request_body=no_body
+    )
     @action(detail=True, methods=['patch'], url_path='is-read')
     def is_read(
             self,

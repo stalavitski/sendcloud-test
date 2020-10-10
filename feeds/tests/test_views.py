@@ -2,11 +2,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.test import APIRequestFactory, force_authenticate
 
-from feeds.views import FeedItemViewSet, FeedSubscriptionViewSet
+from feeds.views import FeedItemViewSet, FeedSubscriptionRetryView
 from rss.tests import BaseTestCase
 
 
-class FeedSubscriptionViewSetTestCase(BaseTestCase):
+class FeedSubscriptionRetryViewTestCase(BaseTestCase):
     def setUp(self) -> None:
         """
         Set self.user before tests.
@@ -23,7 +23,7 @@ class FeedSubscriptionViewSetTestCase(BaseTestCase):
         :return: Response for FeedSubscription.retry.
         """
         factory = APIRequestFactory()
-        view = FeedSubscriptionViewSet.as_view({'patch': 'retry'})
+        view = FeedSubscriptionRetryView.as_view()
         request = factory.patch('/feeds/subscriptions/', format='json')
         force_authenticate(request, user=self.user)
         return view(request, pk=self.feed_subscription.id)

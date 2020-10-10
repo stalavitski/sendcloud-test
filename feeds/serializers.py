@@ -13,6 +13,7 @@ from feeds.tasks import update_feed
 
 class FeedSubscriptionSerializer(serializers.ModelSerializer):
     feed = serializers.IntegerField(read_only=True, source='feed.id')
+    is_stopped = serializers.BooleanField(read_only=True)
     owner = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
@@ -37,6 +38,12 @@ class FeedSubscriptionSerializer(serializers.ModelSerializer):
         instance = super().create(validated_data)
         update_feed.delay(instance.id)
         return instance
+
+
+class FeedSubscriptionRetrySerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = []
+        model = FeedSubscription
 
 
 class FeedCategorySerializer(serializers.ModelSerializer):

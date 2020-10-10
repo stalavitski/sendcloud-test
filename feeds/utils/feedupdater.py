@@ -91,6 +91,7 @@ class FeedItemUpdater(BaseFeedUpdater):
             'pub_date': cls.get_pub_date(feed_item_data),
             'title': feed_item_data.get('title')
         }
+        # @TODO introduce a better way to determine feed item (guid?)
         feed_item, created = FeedItem.objects.get_or_create(
             defaults=data,
             feed=feed,
