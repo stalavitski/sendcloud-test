@@ -40,7 +40,7 @@ class FeedSubscriptionSerializer(serializers.ModelSerializer):
         return instance
 
 
-class FeedSubscriptionRetrySerializer(serializers.ModelSerializer):
+class FeedSubscriptionEmptySerializer(serializers.ModelSerializer):
     class Meta:
         fields = []
         model = FeedSubscription

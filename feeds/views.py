@@ -24,7 +24,7 @@ from feeds.permissions import (
 from feeds.serializers import (
     FeedItemSerializer,
     FeedSerializer,
-    FeedSubscriptionRetrySerializer,
+    FeedSubscriptionEmptySerializer,
     FeedSubscriptionSerializer
 )
 from feeds.tasks import update_feed
@@ -47,7 +47,7 @@ class FeedSubscriptionRetryView(FeedSubscriptionViewMixin, UpdateAPIView):
     http_method_names = ['patch']
     model = FeedSubscription
     permission_classes = [FeedSubscriptionPermission]
-    serializer_class = FeedSubscriptionRetrySerializer
+    serializer_class = FeedSubscriptionEmptySerializer
 
     @swagger_auto_schema(
         operation_description='Force stopped feed update.',
@@ -75,6 +75,39 @@ class FeedSubscriptionRetryView(FeedSubscriptionViewMixin, UpdateAPIView):
 
         # Reset is_stopped and retries values.
         feed_subscription.success()
+        # Force update
+        update_feed.delay(feed_subscription.id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class FeedSubscriptionForceUpdateView(
+    FeedSubscriptionViewMixin,
+    UpdateAPIView
+):
+    http_method_names = ['patch']
+    model = FeedSubscription
+    permission_classes = [FeedSubscriptionPermission]
+    serializer_class = FeedSubscriptionEmptySerializer
+
+    @swagger_auto_schema(
+        operation_description='Force feed update.',
+        request_body=no_body
+    )
+    def patch(
+            self,
+            request: Request,
+            *args: Tuple,
+            **kwargs: Dict
+    ) -> Response:
+        """
+        Force async update of FeedSubscription.
+
+        :param request: Request with contextual information.
+        :param args: Arguments.
+        :param kwargs: Keyword arguments.
+        :return: Response with 204 (No Content) status.
+        """
+        feed_subscription = self.get_object()
         # Force update
         update_feed.delay(feed_subscription.id)
         return Response(status=status.HTTP_204_NO_CONTENT)
