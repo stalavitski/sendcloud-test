@@ -36,7 +36,7 @@ class FeedSubscriptionTestCase(BaseTestCase):
         try:
             feed_subscription.clean()
         except ValueError:
-            self.fail('clean() raised ExceptionType unexpectedly.')
+            self.fail('clean() raised ValueError unexpectedly.')
 
     def test__clean__success__on_same_url_and_new_owner(self) -> None:
         self.set_additional_user()
@@ -48,7 +48,7 @@ class FeedSubscriptionTestCase(BaseTestCase):
         try:
             feed_subscription.clean()
         except ValueError:
-            self.fail('clean() raised ExceptionType unexpectedly.')
+            self.fail('clean() raised ValueError unexpectedly.')
 
     def test__clean__success__on_new_url_and_owner(self) -> None:
         self.set_additional_user()
@@ -60,7 +60,7 @@ class FeedSubscriptionTestCase(BaseTestCase):
         try:
             feed_subscription.clean()
         except ValueError:
-            self.fail('clean() raised ExceptionType unexpectedly.')
+            self.fail('clean() raised ValueError unexpectedly.')
 
     # failure tests
     def test__failure__increments_retries(self) -> None:
@@ -169,7 +169,7 @@ class FeedItemTestCase(BaseTestCase):
         try:
             feed_item.clean()
         except ValueError:
-            self.fail('clean() raised ExceptionType unexpectedly.')
+            self.fail('clean() raised ValueError unexpectedly.')
 
     def test__clean__success__on_same_title_and_new_feed(self) -> None:
         self.set_additional_user()
@@ -183,7 +183,7 @@ class FeedItemTestCase(BaseTestCase):
         try:
             feed_item.clean()
         except ValueError:
-            self.fail('clean() raised ExceptionType unexpectedly.')
+            self.fail('clean() raised ValueError unexpectedly.')
 
     def test__clean__success__on_new__title_and_feed(self) -> None:
         self.set_additional_user()
@@ -197,4 +197,4 @@ class FeedItemTestCase(BaseTestCase):
         try:
             feed_item.clean()
         except ValueError:
-            self.fail('clean() raised ExceptionType unexpectedly.')
+            self.fail('clean() raised ValueError unexpectedly.')

@@ -175,7 +175,9 @@ class FeedUpdaterTestCase(BaseTestCase):
         try:
             FeedUpdater._get_feed_data('http://www.nu.nl/rss/Algemeen')
         except FeedUpdaterInvalidRSSError:
-            self.fail('clean() raised ExceptionType unexpectedly.')
+            self.fail(
+                'clean() raised FeedUpdaterInvalidRSSError unexpectedly.'
+            )
 
     # _update_categories tests
     def test__update_categories__replace_old_categories_with_new(self) -> None:
