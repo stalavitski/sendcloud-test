@@ -27,6 +27,12 @@ To run tests use following command:
 `docker-compose exec web python manage.py test`
 
 
+### Automatic feed update
+
+By default feed automatically updated every 10 minutes. It specified in `settings.py` under
+`CELERY_BEAT_SCHEDULE.update_feeds.schedule`.
+
+
 ### Build steps
 
 - Install and run `db` service with `postgres` image to serve a PostgreSQL database;
