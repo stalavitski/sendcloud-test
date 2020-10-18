@@ -188,7 +188,7 @@ class FeedItemViewSet(
         operation_description='Mark unread feed item as read.',
         request_body=no_body
     )
-    @action(detail=True, methods=['patch'], url_path='is-read')
+    @action(detail=True, methods=['patch'])
     def is_read(
             self,
             request: Request,
